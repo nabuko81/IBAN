@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Validateur d'IBAN</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <h1>Validateur d'IBAN</h1>
+    <label for="iban">Entrez votre IBAN :</label>
+    <input type="text" id="iban" name="iban">
+    <button onclick="validateIBAN()">Valider</button>
+
+    <table id="resultTable" style="display:none;">
+        <tr>
+            <th>IBAN</th>
+            <th>BIC/SWIFT</th>
+            <th>Banque</th>
+            <th>Adresse</th>
+            <th>Pays</th>
+        </tr>
+        <tr>
+            <td id="ibanResult"></td>
+            <td id="bicResult"></td>
+            <td id="bankResult"></td>
+            <td id="addressResult"></td>
+            <td id="countryResult"></td>
+        </tr>
+    </table>
+
+    <script>
+        async function validateIBAN() {
+            const ibanCode = document.getElementById('iban').value;
+            const apiKey = '9be7b2f55820e442df4f7f56ace86d328f79fba5'; // Remplace par ta clé API
+            const url = `https://api.ibanapi.com/v1/validate/${ibanCode}?api_key=${apiKey}`;
+
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+
+                if (data.result === 200) {
+                    document.getElementById('ibanResult').innerText = ibanCode;
+                    document.getElementById('bicResult').innerText = data.data.bank.bic;
+                    document.getElementById('bankResult').innerText = data.data.bank.bank_name;
+                    document.getElementById('addressResult').innerText = data.data.bank.address;
+                    document.getElementById('countryResult').innerText = data.data.country_name;
+                    document.getElementById('resultTable').style.display = 'table';
+                } else {
+                    alert("IBAN invalide");
+                }
+            } catch (error) {
+                console.error('Erreur:', error);
+                alert("Une erreur s'est produite lors de la validation de l'IBAN");
+            }
+        }
+    </script>
+</body>
+</html>
